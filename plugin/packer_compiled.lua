@@ -199,6 +199,11 @@ _G.packer_plugins = {
     path = "/home/lusca/.local/share/nvim/site/pack/packer/start/vim-ReplaceWithRegister",
     url = "https://github.com/inkarkat/vim-ReplaceWithRegister"
   },
+  ["vim-illuminate"] = {
+    loaded = true,
+    path = "/home/lusca/.local/share/nvim/site/pack/packer/start/vim-illuminate",
+    url = "https://github.com/RRethy/vim-illuminate"
+  },
   ["vim-maximizer"] = {
     loaded = true,
     path = "/home/lusca/.local/share/nvim/site/pack/packer/start/vim-maximizer",

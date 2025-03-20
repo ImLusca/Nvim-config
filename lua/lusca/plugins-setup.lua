@@ -11,8 +11,6 @@ local ensure_packer = function()
 end
 local packer_bootstrap = ensure_packer() -- true if packer was just installed
 
--- autocommand that reloads neovim and installs/updates/removes plugins
--- when file is saved
 vim.cmd([[ 
   augroup packer_user_config
     autocmd!
@@ -20,7 +18,6 @@ vim.cmd([[
   augroup end
 ]])
 
--- import packer safely
 local status, packer = pcall(require, "packer")
 if not status then
   return
@@ -78,12 +75,12 @@ return packer.startup(function(use)
       { "nvim-treesitter/nvim-treesitter" },
     },
   }) -- enhanced lsp uis
-  use("jose-elias-alvarez/typescript.nvim") -- additional functionality for typescript server (e.g. rename file & update imports)
-  use("onsails/lspkind.nvim") -- vs-code like icons for autocompletion
+  use("jose-elias-alvarez/typescript.nvim")
+  use("onsails/lspkind.nvim") 
   use("jose-elias-alvarez/null-ls.nvim") -- configure formatters & linters
   use("jayp0521/mason-null-ls.nvim") -- bridges gap b/w mason & null-ls
 
-
+  use 'RRethy/vim-illuminate'
 
   if packer_bootstrap then
     require("packer").sync()
