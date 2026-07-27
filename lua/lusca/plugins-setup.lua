@@ -62,11 +62,10 @@ return packer.startup(function(use)
 
   --lsp
   use("williamboman/mason.nvim")
-  use("williamboman/mason-lspconfig.nvim") 
+  use("williamboman/mason-lspconfig.nvim")
 
-  -- configuring lsp servers
-  use("neovim/nvim-lspconfig") 
-  use("hrsh7th/cmp-nvim-lsp") 
+  -- cmp integration for lsp capabilities
+  use("hrsh7th/cmp-nvim-lsp")
   use({
     "glepnir/lspsaga.nvim",
     branch = "main",

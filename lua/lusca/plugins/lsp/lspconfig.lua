@@ -1,9 +1,4 @@
 
-local lspconfig_status, lspconfig = pcall(require, "lspconfig")
-if not lspconfig_status then
-  return
-end
-
 local cmp_nvim_lsp_status, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
 if not cmp_nvim_lsp_status then
   return
@@ -27,7 +22,6 @@ local on_attach = function(client, bufnr)
   keymap.set("n", "K", "<cmd>Lspsaga hover_doc<CR>", opts)
   keymap.set("n", "<leader>o", "<cmd>LSoutlineToggle<CR>", opts)
 
-  -- typescript specific keymaps (e.g. rename file and update imports)
   if client.name == "ts_ls" then
     keymap.set("n", "<leader>rf", ":TypescriptRenameFile<CR>")
     keymap.set("n", "<leader>oi", ":TypescriptOrganizeImports<CR>")
@@ -43,44 +37,49 @@ for type, icon in pairs(signs) do
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 end
 
-lspconfig["html"].setup({
+local function setup_server(server_name, server_config)
+  vim.lsp.config(server_name, server_config)
+  vim.lsp.enable(server_name)
+end
+
+setup_server("html", {
   capabilities = capabilities,
   on_attach = on_attach,
 })
 
-lspconfig["ts_ls"].setup({
+setup_server("ts_ls", {
   capabilities = capabilities,
   on_attach = on_attach,
 })
 
-lspconfig["cssls"].setup({
+setup_server("cssls", {
   capabilities = capabilities,
   on_attach = on_attach,
 })
 
-lspconfig["tailwindcss"].setup({
+setup_server("tailwindcss", {
   capabilities = capabilities,
   on_attach = on_attach,
 })
 
-lspconfig["emmet_ls"].setup({
+setup_server("emmet_ls", {
   capabilities = capabilities,
   on_attach = on_attach,
   filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
 })
 
-lspconfig["clangd"].setup({
-  capabilities  = capabilities,
-  on_attach = on_attach,
-  filetypes = {"cpp", "c"}
-})
-
-lspconfig["omnisharp"].setup({
+setup_server("clangd", {
   capabilities = capabilities,
-  on_attach = on_attach
+  on_attach = on_attach,
+  filetypes = { "cpp", "c" },
 })
 
-lspconfig["lua_ls"].setup({
+setup_server("omnisharp", {
+  capabilities = capabilities,
+  on_attach = on_attach,
+})
+
+setup_server("lua_ls", {
   capabilities = capabilities,
   on_attach = on_attach,
   settings = {
