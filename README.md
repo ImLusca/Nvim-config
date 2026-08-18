@@ -6,11 +6,13 @@ Este diretório contém um setup pessoal de Neovim configurado em Lua, com foco 
 
 O ambiente foi montado com:
 
-- `packer.nvim` como gerenciador de plugins
+- `lazy.nvim` como gerenciador de plugins
 - `nvim-tree` para navegação em árvore de arquivos
 - `telescope` para busca rápida
 - `nvim-cmp` + `Luasnip` para autocomplete e snippets
-- `mason.nvim` + `mason-lspconfig.nvim` + `mason-null-ls.nvim` para instalação de servidores LSP e ferramentas de formatação
+- `mason.nvim` + `mason-lspconfig.nvim` para instalação de servidores LSP
+- `conform.nvim` para formatação, com ferramentas instaladas pelo Mason
+- `nvim-lint` + `eslint_d` para lint de JavaScript e TypeScript
 - `nvim-treesitter` para highlighting e indentação mais robusta
 - `lspsaga.nvim` para UI de LSP melhorada
 - `lualine.nvim` para statusline
@@ -22,15 +24,17 @@ O ambiente foi montado com:
 - `lua/lusca/core/options.lua` — opções globais do editor
 - `lua/lusca/core/keymaps.lua` — atalhos de teclado
 - `lua/lusca/core/colorscheme.lua` — tema visual
-- `lua/lusca/plugins-setup.lua` — declaração e instalação de plugins com Packer
+- `lua/lusca/plugins-setup.lua` — declaração e instalação de plugins com Lazy
 - `lua/lusca/plugins/` — módulos de configuração dos plugins
-- `plugin/packer_compiled.lua` — cache gerado pelo Packer
+- `lazy-lock.json` — versões exatas dos plugins instalados
+- `NEOVIM-CHEAT-SHEET.md` — fundamentos e fluxo diário no Neovim
+- `TMUX-CHEAT-SHEET.md` — sessões, janelas, painéis e integração com Neovim
 
 ## Dependências
 
 ### Obrigatórias
 
-- Neovim recente (recomendado 0.9+)
+- Neovim 0.11 ou mais recente
 - Git
 - make
 - ripgrep (`rg`) para busca do Telescope
@@ -52,8 +56,10 @@ O setup tenta instalar automaticamente via Mason os servidores e ferramentas aba
 - `cssls`
 - `tailwindcss`
 - `lua_ls`
-- `emmet_ls`
+- `emmet_language_server`
 - `clangd`
+- `ts_ls`
+- `omnisharp`
 - `prettier`
 - `stylua`
 - `eslint_d`
@@ -76,13 +82,13 @@ ln -s /home/Lusca/Nvim-config ~/.config/nvim
 nvim
 ```
 
-Depois, execute dentro do Neovim:
+O `lazy.nvim` e os plugins serão instalados automaticamente na primeira execução. Para sincronizar manualmente:
 
 ```vim
-:PackerSync
+:Lazy sync
 ```
 
-Na primeira execução, o `packer.nvim` será clonado automaticamente se ainda não estiver presente.
+Para inspecionar plugins, atualizações e erros, use `:Lazy`.
 
 ### 3. Instale os servidores LSP e formatters
 
@@ -108,7 +114,7 @@ Este setup também inclui uma configuração de tmux compatível com a navegaç�
 
 A configuração principal do tmux fica em:
 
-- `tmux/.tmux.conf`
+- `tmux/tmux.conf`
 
 ### Principais escolhas da configuração
 
@@ -122,11 +128,17 @@ A configuração principal do tmux fica em:
 - `Ctrl-a |` — divide a janela horizontalmente
 - `Ctrl-a -` — divide a janela verticalmente
 - `Ctrl-a r` — recarrega a configuração do tmux
-- `Ctrl-a h/j/k/l` — redimensiona o painel
+- `Ctrl-a h/j/k/l` — seleciona outro painel
+- `Ctrl-a` + setas — redimensiona o painel
 
 ### Uso combinado com o Neovim
 
 O plugin `vim-tmux-navigator` ajuda a manter a navegação entre splits do Neovim e panes do tmux mais fluida, especialmente em fluxos de desenvolvimento com terminal + editor lado a lado.
+
+Consulte os guias completos:
+
+- [Guia diário de Neovim](NEOVIM-CHEAT-SHEET.md)
+- [Guia diário de tmux](TMUX-CHEAT-SHEET.md)
 
 ## Atalhos principais
 
@@ -149,8 +161,10 @@ O plugin `vim-tmux-navigator` ajuda a manter a navegação entre splits do Neovi
 
 ## Observações
 
-- A configuração usa `null-ls` para formatação automática em `*.ts`, `*.tsx`, `*.js`, `*.jsx` e `*.json`.
-- O `formatter` para C# é aplicado em `*.cs` com `vim.lsp.buf.format({ async = false })`.
+- A configuração usa `conform.nvim` para formatar Lua, web, JSON, Markdown, YAML, C e C++ ao salvar.
+- JavaScript e TypeScript são verificados pelo `eslint_d` ao entrar, sair do modo de inserção e salvar o buffer.
+- Em linguagens sem formatter configurado, como C#, o Conform usa o LSP como fallback.
+- `<leader>f` formata manualmente o arquivo ou a seleção atual.
 - O tema principal configurado é `nightfly`.
 
 ## Dica rápida
@@ -158,7 +172,7 @@ O plugin `vim-tmux-navigator` ajuda a manter a navegação entre splits do Neovi
 Se o ambiente estiver com erro de plugin ou LSP, a sequência mais comum é:
 
 ```vim
-:PackerSync
+:Lazy sync
 :Mason
 :checkhealth
 ```

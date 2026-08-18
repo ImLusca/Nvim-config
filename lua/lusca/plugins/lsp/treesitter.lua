@@ -4,10 +4,7 @@ if not status then
 end
 
 treesitter.setup({
-  ensure_installed = { "typescript", "tsx", "javascript", "lua", "json", "html", "css" },
+  ensure_installed = { "typescript", "tsx", "javascript", "lua", "json", "html", "css", "markdown", "markdown_inline", "yaml" },
   highlight = { enable = true },
   indent = { enable = true },
-  autopairs = { enable = true },
-  autotag = { enable = true },
 })
-

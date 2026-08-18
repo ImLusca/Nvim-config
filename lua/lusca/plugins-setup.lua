@@ -1,87 +1,87 @@
---auto install packer if not installed
-local ensure_packer = function()
-  local fn = vim.fn
-  local install_path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-  if fn.empty(fn.glob(install_path)) > 0 then
-    fn.system({ "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", install_path })
-    vim.cmd([[packadd packer.nvim]])
-    return true
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
+if not vim.uv.fs_stat(lazypath) then
+  local output = vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--branch=stable",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  })
+
+  if vim.v.shell_error ~= 0 then
+    error("Falha ao instalar lazy.nvim:\n" .. output)
   end
-  return false
-end
-local packer_bootstrap = ensure_packer() -- true if packer was just installed
-
-vim.cmd([[ 
-  augroup packer_user_config
-    autocmd!
-    autocmd BufWritePost plugins-setup.lua source <afile> | PackerSync
-  augroup end
-]])
-
-local status, packer = pcall(require, "packer")
-if not status then
-  return
 end
 
+vim.opt.rtp:prepend(lazypath)
 
-local status,packer = pcall(require, "packer")
+require("lazy").setup({
+  { "folke/lazy.nvim" },
+  { "bluz71/vim-nightfly-guicolors", name = "nightfly" },
 
-if not status then
-  return
-end 
+  { "christoomey/vim-tmux-navigator" },
+  { "szw/vim-maximizer" },
+  { "tpope/vim-surround" },
+  { "inkarkat/vim-ReplaceWithRegister" },
+  { "numToStr/Comment.nvim" },
 
-return packer.startup(function(use)
-  use("wbthomason/packer.nvim")
-  use("bluz71/vim-nightfly-guicolors")
-   
-  use("christoomey/vim-tmux-navigator") -- tmux & split window navigation
-  use("szw/vim-maximizer")
+  { "nvim-tree/nvim-tree.lua", dependencies = { "nvim-tree/nvim-web-devicons" } },
+  { "nvim-lualine/lualine.nvim", dependencies = { "nvim-tree/nvim-web-devicons" } },
 
-  use("tpope/vim-surround") -- add, delete, change surroundings (it's awesome)
-  use("inkarkat/vim-ReplaceWithRegister") -- replace with register contents using motion (gr + motion)
-  
-  use("numToStr/Comment.nvim") -- gcc para commentar
-
-  use("nvim-tree/nvim-tree.lua") -- Grande gostoso
-
-  use("nvim-tree/nvim-web-devicons") -- icones bunitinhos
-
-  use("nvim-lualine/lualine.nvim") -- statusline Bunitinhos
-
-  use("nvim-lua/plenary.nvim")
-  use({"nvim-telescope/telescope-fzf-native.nvim",run ="make"})
-  use({"nvim-telescope/telescope.nvim",branch="0.1.x"})
-  
-  -- autocomplete
-  use("hrsh7th/nvim-cmp") -- completion plugin
-  use("hrsh7th/cmp-buffer") -- source for text in buffer
-  use("hrsh7th/cmp-path") -- source for file system paths
-  use("L3MON4D3/LuaSnip") -- snippet engine
-  use("saadparwaiz1/cmp_luasnip") -- for autocompletion
-  use("rafamadriz/friendly-snippets") -- useful snippets
-
-  --lsp
-  use("williamboman/mason.nvim")
-  use("williamboman/mason-lspconfig.nvim")
-
-  -- cmp integration for lsp capabilities
-  use("hrsh7th/cmp-nvim-lsp")
-  use({
-    "glepnir/lspsaga.nvim",
-    branch = "main",
-    requires = {
-      { "nvim-tree/nvim-web-devicons" },
-      { "nvim-treesitter/nvim-treesitter" },
+  { "nvim-lua/plenary.nvim" },
+  {
+    "nvim-telescope/telescope.nvim",
+    branch = "0.1.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
     },
-  }) -- enhanced lsp uis
-  use("jose-elias-alvarez/typescript.nvim")
-  use("onsails/lspkind.nvim") 
-  use("jose-elias-alvarez/null-ls.nvim") -- configure formatters & linters
-  use("jayp0521/mason-null-ls.nvim") -- bridges gap b/w mason & null-ls
+  },
 
-  use 'RRethy/vim-illuminate'
+  { "hrsh7th/nvim-cmp" },
+  { "hrsh7th/cmp-buffer" },
+  { "hrsh7th/cmp-path" },
+  { "hrsh7th/cmp-nvim-lsp" },
+  { "L3MON4D3/LuaSnip", dependencies = { "rafamadriz/friendly-snippets" } },
+  { "saadparwaiz1/cmp_luasnip" },
+  { "onsails/lspkind.nvim" },
 
-  if packer_bootstrap then
-    require("packer").sync()
-  end
-end)
+  { "mason-org/mason.nvim" },
+  { "mason-org/mason-lspconfig.nvim", dependencies = { "mason-org/mason.nvim" } },
+  { "neovim/nvim-lspconfig" },
+  { "WhoIsSethDaniel/mason-tool-installer.nvim", dependencies = { "mason-org/mason.nvim" } },
+  { "stevearc/conform.nvim" },
+  { "mfussenegger/nvim-lint" },
+  {
+    "nvimdev/lspsaga.nvim",
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+      "nvim-treesitter/nvim-treesitter",
+    },
+  },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    branch = "master",
+    build = ":TSUpdate",
+  },
+
+  {
+    "olimorris/codecompanion.nvim",
+    tag = "v19.20.0",
+    config = function()
+      require("codecompanion").setup()
+    end,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+  },
+
+  { "RRethy/vim-illuminate" },
+}, {
+  change_detection = { notify = false },
+  checker = { enabled = false },
+  rocks = { enabled = false },
+})

@@ -20,22 +20,31 @@ local on_attach = function(client, bufnr)
   keymap.set("n", "[d", "<cmd>Lspsaga diagnostic_jump_prev<CR>", opts)
   keymap.set("n", "]d", "<cmd>Lspsaga diagnostic_jump_next<CR>", opts)
   keymap.set("n", "K", "<cmd>Lspsaga hover_doc<CR>", opts)
-  keymap.set("n", "<leader>o", "<cmd>LSoutlineToggle<CR>", opts)
+  keymap.set("n", "<leader>o", "<cmd>Lspsaga outline<CR>", opts)
 
   if client.name == "ts_ls" then
-    keymap.set("n", "<leader>rf", ":TypescriptRenameFile<CR>")
-    keymap.set("n", "<leader>oi", ":TypescriptOrganizeImports<CR>")
-    keymap.set("n", "<leader>ru", ":TypescriptRemoveUnused<CR>")
+    keymap.set("n", "<leader>oi", function()
+      vim.lsp.buf.code_action({ apply = true, context = { only = { "source.organizeImports" } } })
+    end, vim.tbl_extend("force", opts, { desc = "Organizar imports" }))
+    keymap.set("n", "<leader>ru", function()
+      vim.lsp.buf.code_action({ apply = true, context = { only = { "source.removeUnused" } } })
+    end, vim.tbl_extend("force", opts, { desc = "Remover imports nao usados" }))
   end
 end
 
 local capabilities = cmp_nvim_lsp.default_capabilities()
 
-local signs = { Error = " ", Warn = " ", Hint = "ﴞ ", Info = " " }
-for type, icon in pairs(signs) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-end
+vim.diagnostic.config({
+  severity_sort = true,
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = " ",
+      [vim.diagnostic.severity.WARN] = " ",
+      [vim.diagnostic.severity.HINT] = "󰌵 ",
+      [vim.diagnostic.severity.INFO] = " ",
+    },
+  },
+})
 
 local function setup_server(server_name, server_config)
   vim.lsp.config(server_name, server_config)
@@ -62,7 +71,7 @@ setup_server("tailwindcss", {
   on_attach = on_attach,
 })
 
-setup_server("emmet_ls", {
+setup_server("emmet_language_server", {
   capabilities = capabilities,
   on_attach = on_attach,
   filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },

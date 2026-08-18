@@ -2,12 +2,11 @@ vim.g.mapleader = " "
 
 local keymap = vim.keymap
 
-keymap.set("i","jk","<ESC>")
-keymap.set("n", "x,", '"_x"')
+keymap.set("i", "jk", "<Esc>", { desc = "Sair do modo de insercao" })
+keymap.set("n", "x", '"_x', { desc = "Apagar sem copiar" })
 
 keymap.set("n","<leader>m", "<C-a>")
 keymap.set("n","<leader>=", "<C-x>")
-keymap.set("n","<leader>e", ":Explore<CR>", { noremap = true, silent = true })
 keymap.set("n","<A-j>", ":m .+1<CR>==", { noremap = true, silent = true })
 keymap.set("n","<A-k>", ":m .-2<CR>==", { noremap = true, silent = true })
 
@@ -25,7 +24,7 @@ keymap.set("n","<leader>tn", ":tabn<CR>")
 keymap.set("n","<leader>tp", ":tabp<CR>")
 
 --nvim-tree
-keymap.set("n","<leader>e", ":NvimTreeToggle<CR>")
+keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { silent = true, desc = "Alternar explorador" })
 
 --telescope
 keymap.set("n","<leader>ff","<cmd>Telescope find_files<cr>")
